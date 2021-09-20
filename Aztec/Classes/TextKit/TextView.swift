@@ -147,6 +147,10 @@ public protocol TextViewPasteboardDelegate: class {
     ///
     /// - Returns: True if the paste succeeded, false if it did not.
     func tryPastingString(in textView: TextView) -> Bool
+
+    /// Override pasteboard
+    ///
+    var pasteboard: UIPasteboard? { get set }
 }
 
 // MARK: - TextView
@@ -492,8 +496,9 @@ open class TextView: UITextView {
         let html = storage.getHTML(range: selectedRange)
         super.cut(sender)
 
-        storeInPasteboard(encoded: data)
-        storeInPasteboard(html: html)
+        let pasteBoard = pasteboardDelegate.pasteboard ?? UIPasteboard.general
+        storeInPasteboard(encoded: data, pasteboard: pasteBoard)
+        storeInPasteboard(html: html, pasteboard: pasteBoard)
     }
 
     open override func copy(_ sender: Any?) {
@@ -501,8 +506,9 @@ open class TextView: UITextView {
         let html = storage.getHTML(range: selectedRange)
         super.copy(sender)
 
-        storeInPasteboard(encoded: data)
-        storeInPasteboard(html: html)
+        let pasteBoard = pasteboardDelegate.pasteboard ?? UIPasteboard.general
+        storeInPasteboard(encoded: data, pasteboard: pasteBoard)
+        storeInPasteboard(html: html, pasteboard: pasteBoard)
     }
 
     open override func paste(_ sender: Any?) {
@@ -658,7 +664,7 @@ open class TextView: UITextView {
 
     // MARK: - Pasteboard Helpers
 
-    internal func storeInPasteboard(encoded data: Data, pasteboard: UIPasteboard = UIPasteboard.general) {
+    internal func storeInPasteboard(encoded data: Data, pasteboard: UIPasteboard) {
         if pasteboard.numberOfItems > 0 {
             pasteboard.items[0][NSAttributedString.pastesboardUTI] = data;
         } else {
@@ -666,7 +672,7 @@ open class TextView: UITextView {
         }
     }
 
-    internal func storeInPasteboard(html: String, pasteboard: UIPasteboard = UIPasteboard.general) {
+    internal func storeInPasteboard(html: String, pasteboard: UIPasteboard) {
         if pasteboard.numberOfItems > 0 {
             pasteboard.items[0][kUTTypeHTML as String] = html;
         } else {
