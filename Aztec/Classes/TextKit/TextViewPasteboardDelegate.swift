@@ -1,6 +1,7 @@
 import UIKit
 
 open class AztecTextViewPasteboardDelegate: TextViewPasteboardDelegate {
+    public var pasteboard: UIPasteboard?
 
     public init() {}
 
@@ -20,8 +21,10 @@ open class AztecTextViewPasteboardDelegate: TextViewPasteboardDelegate {
     /// - Returns: True if the paste succeeds, false if it does not.
     ///
     open func tryPastingURL(in textView: TextView) -> Bool {
-        guard UIPasteboard.general.hasURLs,
-            let url = UIPasteboard.general.url else {
+        let pasteBoard: UIPasteboard = pasteboard ?? UIPasteboard.general
+
+        guard pasteBoard.hasURLs,
+            let url = pasteBoard.url else {
                 return false
         }
 
@@ -44,7 +47,9 @@ open class AztecTextViewPasteboardDelegate: TextViewPasteboardDelegate {
     /// - Returns: True if the paste succeeds, false if it does not.
     ///
     open func tryPastingHTML(in textView: TextView) -> Bool {
-        guard let html = UIPasteboard.general.html(),
+        let pasteBoard: UIPasteboard = pasteboard ?? UIPasteboard.general
+
+        guard let html = pasteBoard.html(),
             textView.storage.htmlConverter.isSupported(html) else {
                 return false
         }
@@ -62,7 +67,9 @@ open class AztecTextViewPasteboardDelegate: TextViewPasteboardDelegate {
     /// - Returns: True if the paste succeeds, false if it does not.
     ///
     open func tryPastingAttributedString(in textView: TextView) -> Bool {
-        guard let string = UIPasteboard.general.attributedString() else {
+        let pasteBoard: UIPasteboard = pasteboard ?? UIPasteboard.general
+
+        guard let string = pasteBoard.attributedString() else {
             return false
         }
         string.loadLazyAttachments()
@@ -112,7 +119,9 @@ open class AztecTextViewPasteboardDelegate: TextViewPasteboardDelegate {
     /// - Returns: True if the paste succeeds, false if it does not.
     ///
     open func tryPastingString(in textView: TextView) -> Bool {
-        guard let string = UIPasteboard.general.attributedString() else {
+        let pasteBoard: UIPasteboard = pasteboard ?? UIPasteboard.general
+
+        guard let string = pasteBoard.attributedString() else {
             return false
         }
 
